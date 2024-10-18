@@ -1,28 +1,39 @@
-from selenium.webdriver import Remote, ChromeOptions
-from selenium.webdriver.chromium.remote_connection import ChromiumRemoteConnection
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
+from selenium.common.exceptions import WebDriverException
+import traceback
 
-SBR_WEBDRIVER = 'https://brd-customer-hl_05bdf270-zone-ai_scrapper:95yv0v77n8v3@brd.superproxy.io:9515'
-
-def scrape_website(website):
+def scrape_website(url):
     print("Launching chrome browser...")
     
-    sbr_connection = ChromiumRemoteConnection(SBR_WEBDRIVER, 'goog', 'chrome')
-    with Remote(sbr_connection, options=ChromeOptions()) as driver:
-        driver.get(website)
-        # CAPTCHA handling: If you're expecting a CAPTCHA on the target page, use the following code snippet to check the status of Scraping Browser's automatic CAPTCHA solver
-        print('Waiting captcha to solve...')
-        solve_res = driver.execute('executeCdpCommand', {
-            'cmd': 'Captcha.waitForSolve',
-            'params': {'detectTimeout': 10000},
-        })
-        print('Captcha solve status:', solve_res['value']['status'])
-        print('Navigated! Scraping page content...')
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')  # Run in headless mode
+    
+    try:
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        
+        print(f"Navigating to {url}")
+        driver.get(url)
+        
+        print('Scraping page content...')
         html = driver.page_source
         return html
+    except WebDriverException as e:
+        print(f"WebDriver error: {e}")
+        print(traceback.format_exc())
+        return None
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        print(traceback.format_exc())
+        return None
+    finally:
+        if 'driver' in locals():
+            driver.quit()
 
 def extract_body_content(html_content):
-    soup = BeautifulSoup(html_content,"html.parser")
+    soup = BeautifulSoup(html_content, "html.parser")
     body_content = soup.body
     if body_content:
         return str(body_content)
@@ -37,7 +48,7 @@ def clean_body_content(body_content):
     cleaned_content = soup.get_text(separator="\n")
     cleaned_content = "\n".join(
         line.strip() for line in cleaned_content.splitlines() if line.strip()
-        )
+    )
     
     return cleaned_content
 
