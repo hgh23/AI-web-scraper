@@ -39,12 +39,7 @@ To run the AI Web Scraper, you need:
 
 ## Configuration
 
-1. In `scrape.py`, update the `SBR_WEBDRIVER` variable with your actual Scraping Browser credentials:
-   ```python
-   SBR_WEBDRIVER = 'https://brd-customer-hl_YOUR_ACTUAL_CREDENTIALS@brd.superproxy.io:9515'
-   ```
-
-2. In `main.py`, ensure the Downloads folder path is correct for your system:
+1. In `main.py`, ensure the Downloads folder path is correct for your system:
    ```python
    downloads_folder = r"C:\Users\YourUsername\Downloads"
    ```
