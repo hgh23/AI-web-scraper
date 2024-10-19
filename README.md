@@ -28,7 +28,20 @@ This project is an AI-powered web scraper that uses Streamlit for the user inter
    pip install -r requirements.txt
    ```
 
+<<<<<<< HEAD
 4. Make sure you have Chrome installed, as the scraper uses ChromeDriver.
+=======
+3. Set up Ollama:
+   - Follow the installation instructions at [Ollama's official website](https://ollama.ai/)
+   - Make sure the Llama 3.1 model is available in your Ollama installation
+
+## Configuration
+
+1. In `main.py`, ensure the Downloads folder path is correct for your system:
+   ```python
+   downloads_folder = r"C:\Users\YourUsername\Downloads"
+   ```
+>>>>>>> ea18134c5f34eef65d565e6f5d228cb542f3b9e1
 
 ## Usage
 
