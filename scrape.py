@@ -1,26 +1,42 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def scrape_website(website):
-    print("Launching chrome browser...")
+    logger.info("Launching chrome browser...")
     
-    options = webdriver.ChromeOptions()
-    # Add any additional options here if needed
-    # options.add_argument('--headless')  # Uncomment this if you want to run in headless mode
-    
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-    
+    options = Options()
+    options.add_argument('--headless')  # Run in headless mode
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+
+    try:
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        logger.info("Chrome WebDriver initialized successfully.")
+    except Exception as e:
+        logger.error(f"Failed to initialize Chrome WebDriver: {str(e)}")
+        raise
+
     try:
         driver.get(website)
-        print("Page loaded...")
-        time.sleep(10)  # Wait for 10 seconds to allow dynamic content to load
+        logger.info("Page loaded...")
+        time.sleep(5)  # Wait for 5 seconds to allow dynamic content to load
         html = driver.page_source
         return html
+    except Exception as e:
+        logger.error(f"Error while scraping website: {str(e)}")
+        raise
     finally:
         driver.quit()
+        logger.info("Browser closed.")
 
 def extract_body_content(html_content):
     soup = BeautifulSoup(html_content, "html.parser")
